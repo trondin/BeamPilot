@@ -1,0 +1,1 @@
+{"work_x": 30.0, "work_y": 30.0, "min_power": 5, "max_power": 50, "burn_speed": 2500, "last_dir": "/home/vladimir/my_files/Work/my_projects/Python_VS/laser_utils/imGlaser", "step": "1", "multiplier": "10", "test_work_x": 30.0, "test_work_y": 30.0, "test_x_steps": 10, "test_min_power": 5, "test_max_power": 90, "test_y_steps": 10, "test_min_speed": 500, "test_max_speed": 2500}

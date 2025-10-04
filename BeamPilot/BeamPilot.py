@@ -34,6 +34,8 @@ SET_ZERO_CMD = "G92 X0 Y0"
 BUFFER_CHECK_INTERVAL = 0.1  # Seconds to check for sending next line
 POLL_INTERVAL = 1  # Seconds to poll position for real-time updates
 MAX_POWER = 1000
+MAX_GCODE_LINES = 100000  # Maximum number of G-code lines allowed
+MAX_FILE_SIZE = 10 * 1024 * 1024  # Maximum file size in bytes (10 MB)
 G1_IDLE_RE = re.compile(r'^\s*G1\s+F[\d\.]+.*[XY][+-]?\d+\.?\d*.*$', re.IGNORECASE)
 
 class GRBLController(BeamPilotGui):
@@ -454,9 +456,34 @@ class GRBLController(BeamPilotGui):
             self.last_open_dir = os.path.dirname(file_path)
             self.save_config()
             
+            # Check file size before reading
+            try:
+                file_size = os.path.getsize(file_path)
+                if file_size > MAX_FILE_SIZE:
+                    messagebox.showwarning(
+                        "Warning: File Too Large",
+                        f"The G-code file size is {file_size / (1024 * 1024):.2f} MB, "
+                        f"which exceeds the limit of {MAX_FILE_SIZE / (1024 * 1024):.2f} MB. "
+                        "Loading cancelled to prevent performance issues."
+                    )
+                    return
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to check file size: {e}")
+                return
+            
+            # Read file with line limit check
+            input_lines = []
             try:
                 with open(file_path, "r") as f:
-                    input_lines = [line.rstrip('\n') for line in f]
+                    for i, line in enumerate(f, 1):
+                        input_lines.append(line.rstrip('\n'))
+                        if i > MAX_GCODE_LINES:
+                            messagebox.showwarning(
+                                "Warning: Too Many Lines",
+                                f"The G-code file has more than {MAX_GCODE_LINES} lines. "
+                                "Loading cancelled to prevent performance issues."
+                            )
+                            return
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to read G-code file: {e}")
                 return
@@ -472,6 +499,15 @@ class GRBLController(BeamPilotGui):
                         cleaned_lines.append(line)
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to process G-code comments: {e}")
+                return
+            
+            # Check if the number of cleaned lines exceeds the limit
+            if len(cleaned_lines) > MAX_GCODE_LINES:
+                messagebox.showwarning(
+                    "Warning: File Too Large",
+                    f"The G-code file has {len(cleaned_lines)} lines, which exceeds the limit of {MAX_GCODE_LINES}. "
+                    "Loading cancelled to prevent performance issues."
+                )
                 return
             
             has_g1_idle, lines = self.analyze_gcode(cleaned_lines)
@@ -805,3 +841,4 @@ if __name__ == "__main__":
     app.last_data_time = time.time()  # Initialize last data time
     app.after(100, app.update)
     app.mainloop()
+
