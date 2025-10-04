@@ -53,7 +53,7 @@ All tools are open-source, tested on Linux (Ubuntu/Debian), and require Python 3
 
 
 
-![AirAssist1](/home/vladimir/my_files/Work/my_projects/Python_VS/laser_utils/release/Images/AirAssist1.JPG)
+![AirAssist1](Images/AirAssist1.JPG)
 
 - **Standalone G-code Scripts**:
   - CLI automation: Path optimization reduces idle travel by up to 50%.
@@ -160,10 +160,10 @@ MIT License. See LICENSE.
 
 
 
-![tiger](/home/vladimir/my_files/Work/my_projects/Python_VS/laser_utils/release/Images/tiger.JPG)
+![tiger](Images/tiger.JPG)
 
 
 
-![test](/home/vladimir/my_files/Work/my_projects/Python_VS/laser_utils/release/Images/test.JPG)
+![test](Images/test.JPG)
 
 Happy lasering! 🚀
